@@ -80,10 +80,19 @@ export default function EunoiaOS() {
         r.json().then(d => {
           if (d.sessions) {
             setSessions(d.sessions);
-            // Check if user has skills, if not → onboarding
+            // Check if user has skills, if not → onboarding or create defaults
             fetch('/api/skills', { credentials: 'include' }).then(sr => sr.json()).then(sd => {
               if (!sd.skills || sd.skills.length === 0) {
-                window.location.href = '/onboarding';
+                // Check if onboarding was completed
+                fetch('/api/onboarding', { credentials: 'include' }).then(or => or.json()).then(od => {
+                  if (od.onboarding && !od.onboarding.generated_skills) {
+                    // Onboarding started but not finished → redirect
+                    window.location.href = '/onboarding';
+                  } else if (!od.onboarding) {
+                    // No onboarding at all → redirect to onboarding
+                    window.location.href = '/onboarding';
+                  }
+                }).catch(() => {});
               }
             }).catch(() => {});
           }
@@ -329,6 +338,16 @@ export default function EunoiaOS() {
             </div>
           </div>
         )}
+
+        {/* Profile button at bottom of sidebar */}
+        <div style={{ marginTop: 'auto', padding: '12px' }}>
+          <button
+            style={{ ...styles.newChatBtn, justifyContent: 'center' }}
+            onClick={() => { setSidebarOpen(false); window.location.href = '/profile'; }}
+          >
+            ◎ Профиль
+          </button>
+        </div>
       </aside>
 
       {/* ── MAIN ───────────────────────────────── */}

@@ -75,15 +75,14 @@ export default function EunoiaOS() {
   // ── Auth check ───────────────────────────────────
   useEffect(() => {
     fetch('/api/auth/login', { method: 'POST', body: JSON.stringify({}) }).catch(() => {});
-    // Check if already logged in
     fetch('/api/sessions').then(r => {
       if (r.ok) {
         r.json().then(d => {
           if (d.sessions) {
             setSessions(d.sessions);
-            // Check onboarding
-            fetch('/api/onboarding').then(or => or.json()).then(od => {
-              if (!od.onboarding || !od.onboarding.generated_skills) {
+            // Check if user has skills, if not → onboarding
+            fetch('/api/skills', { credentials: 'include' }).then(sr => sr.json()).then(sd => {
+              if (!sd.skills || sd.skills.length === 0) {
                 window.location.href = '/onboarding';
               }
             }).catch(() => {});

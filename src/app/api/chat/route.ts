@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 import { getAuthUser } from '@/lib/auth';
 import db from '@/lib/db';
+import { createMemNote } from '@/lib/mem';
 
 // Skill presets — роли и контексты для разных режимов
 const SKILL_PRESETS: Record<string, { name: string; system: string }> = {

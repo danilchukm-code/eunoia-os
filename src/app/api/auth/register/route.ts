@@ -21,7 +21,8 @@ export async function POST(req: NextRequest) {
     db.prepare('INSERT INTO users (id, email, password_hash, name) VALUES (?, ?, ?, ?)')
       .run(id, email, password_hash, name || 'User');
 
-    ensureDefaultSkills(id);
+    // Don't create default skills here — they will be created during onboarding
+    // If user skips onboarding, we'll create defaults on first page load
 
     const token = await createToken(id);
     const res = NextResponse.json({ ok: true, user: { id, email, name: name || 'User' } });
